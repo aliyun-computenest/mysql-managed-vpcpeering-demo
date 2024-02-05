@@ -1,0 +1,41 @@
+ROSTemplateFormatVersion: "2015-09-01"
+Parameters:
+  # 数据库root账户密码
+  Password:
+    # 查询该参数时只输出星号（*）
+    NoEcho: true
+    Type: String
+    Description:
+      en: 'Database root account passwor, 8-32 characters, including uppercase and lowercase letters, numbers and special symbols (including: !@#$%^&*-+=_).'
+      zh-cn: 数据库root账户密码，长度8-32个字符，可包含大小字母、数字及特殊符号（包含：!@#$%^&*-+=_）。
+    Label:
+      en: Root Account Password
+      zh-cn: 数据库root账户密码
+    ConstraintDescription:
+      en: '8-32 characters, including uppercase and lowercase letters, numbers and special symbols (including: !@#$%^&*-+=_).'
+      zh-cn: 8-32个字符，可包含大小字母、数字及特殊符号（包含：!@#$%^&*-+=_）。
+    MinLength: '8'
+    MaxLength: '32'
+    AssociationProperty: ALIYUN::ECS::Instance::Password
+  ZoneId:
+    Type: String
+    AssociationProperty: ALIYUN::ECS::Instance:ZoneId
+    Label:
+      en: VSwitch Available Zone
+      zh-cn: 可用区
+Metadata:
+  ALIYUN::ROS::Interface:
+    # 定义资源分组，创建服务实例时，同一分组的参数分布在一起
+    ParameterGroups:
+      - Parameters:
+          - Password
+        Label:
+          en: Basic Configuration
+          zh-cn: 基础配置
+      - Parameters:
+          - ZoneId
+          - VpcId
+          - VSwitchId
+        Label:
+          en: Network Configuration
+          zh-cn: 网络配置
