@@ -1,0 +1,85 @@
+Service:
+  RegionId: cn-hangzhou
+  DeployType: ros
+  TenantType: SingleTenant
+  DeployMetadata:
+    ServiceInstanceNameRule:
+      Prefix: mysql
+    SupplierDeployMetadata:
+      UserType: Aliyun
+      RoleName: ${RoleName}
+      SupplierTemplateConfigs:
+        - Name: 单机版
+          Url: 'templates/template.yaml'
+          PredefinedParameters:
+            - Name: 低配版
+              Description: 该套餐采用了2vCPU 4GB内存的ECS实例（ecs.c6.large），满足基本的业务需求。
+              Parameters:
+                EcsInstanceType: ['ecs.c6.large']
+              Type: Normal
+              OrderList:
+                - EcsInstanceType
+            - Name: 基础版
+              Description: 该套餐采用了4vCPU 8GB内存的ECS实例（ecs.c6.xlarge），该配置可以满足大部分的业务需求。
+              Parameters:
+                EcsInstanceType: ['ecs.c6.xlarge']
+              Type: Normal
+              OrderList:
+                - EcsInstanceType
+            - Name: 高配版
+              Description: 该套餐采用了8vCPU 16GB内存的ECS实例（ecs.c6.2xlarge），该配置使用了更高规格ECS，进一步提升了架构的稳定性和性能。
+              Parameters:
+                EcsInstanceType: ['ecs.c6.2xlarge']
+              Type: Normal
+              OrderList:
+                - EcsInstanceType
+          HiddenParameterKeys:
+            - EcsInstanceType
+      FileArtifactRelation:
+        '{{ computenest::file::MySQL }}':
+          ArtifactId: ${Artifact.Artifact_1.ArtifactId}
+          ArtifactVersion: ${Artifact.Artifact_1.ArtifactVersion}
+    TemplateConfigs:
+      - Name: 单机版
+        Url: templates/parameters.yaml
+        AllowedRegions:
+          - cn-hangzhou
+        PredefinedParameters:
+        - Name: 低配版
+          Parameters: {}
+          Description: 该套餐采用了2vCPU 4GB内存的ECS实例（ecs.c6.large），满足基本的业务需求。
+          Type: Normal
+          OrderList:
+            - EcsInstanceType
+        - Name: 基础版
+          Parameters: {}
+          Description: 该套餐采用了4vCPU 8GB内存的ECS实例（ecs.c6.xlarge），该配置可以满足大部分的业务需求。
+          Type: Normal
+          OrderList:
+            - EcsInstanceType
+        - Name: 高配版
+          Parameters: {}
+          Description: 该套餐采用了8vCPU 16GB内存的ECS实例（ecs.c6.2xlarge），该配置使用了更高规格ECS，进一步提升了架构的稳定性和性能。
+          Type: Normal
+          OrderList:
+            - EcsInstanceType
+    NetworkMetadata:
+      EnablePrivateVpcConnection: true
+      EnableReversePrivateVpcConnection: false
+      PrivateVpcConnectionMode: VpcPeering
+  ServiceType: managed
+  ServiceInfo:
+    Locale: zh-CN
+    ShortDescription: mysql demo
+    Image: 'icons/service_logo.jpg'
+    Name: MySQL托管版beta1
+  ShareType: Public
+  ApprovalType: Manual
+Artifact:
+  Artifact_1:
+    ArtifactType: File
+    ArtifactName: MySQL
+    Description: MySQL
+    ArtifactProperty:
+      RegionId: cn-hangzhou
+      Url: 'artifacts/mysql-community-release-el6-5.noarch.rpm'
