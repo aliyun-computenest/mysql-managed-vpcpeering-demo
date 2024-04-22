@@ -296,14 +296,20 @@ Outputs:
   MysqlUserName:
     Label: MySQL登录用户名
     Value: admin
-  PrivateIps:
-    Label: 私网Ip地址
+  VisitUrl:
+    Label: 私网访问地址
+    Description:
+      zh-cn: 私网访问地址
+      en: private Addresses
     Value:
-      Fn::Select:
-        - 0
-        - Fn::GetAtt:
-            - EcsInstanceGroup
-            - PrivateIps
+      Fn::Sub:
+        - mysql://${ServerAddress}:3306
+        - ServerAddress:
+            Fn::Select:
+              - 0
+              - Fn::GetAtt:
+                  - EcsInstanceGroup
+                  - PrivateIps
 ```
 
 ## 服务配置
