@@ -108,7 +108,7 @@
    apt install mysql-client
    ```
     3. 在该ECS中连接MySQL，用IP进行连接：
-        ![连接MySQL.png](连接MySQL.png)
+        ![连接MySQL.jpg](连接MySQL.jpg)
 
 ## 服务详细说明
 
