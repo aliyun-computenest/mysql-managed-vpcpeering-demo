@@ -1,5 +1,5 @@
 Service:
-  RegionId: cn-hangzhou
+  RegionId: ap-southeast-1
   DeployType: ros
   TenantType: SingleTenant
   DeployMetadata:
@@ -43,7 +43,7 @@ Service:
       - Name: 单机版
         Url: templates/parameters.yaml
         AllowedRegions:
-          - cn-hangzhou
+          - ap-southeast-1
         PredefinedParameters:
         - Name: 低配版
           Parameters: {}
@@ -81,5 +81,5 @@ Artifact:
     ArtifactName: MySQL
     Description: MySQL
     ArtifactProperty:
-      RegionId: cn-hangzhou
+      RegionId: ap-southeast-1
       Url: 'artifacts/mysql-community-release-el6-5.noarch.rpm'
