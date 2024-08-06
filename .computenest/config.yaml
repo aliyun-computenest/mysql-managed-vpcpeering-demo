@@ -22,9 +22,9 @@ Service:
               ParameterValueMapping:
                 cn-hangzhou:
                   Parameters:
-                    VpcId: 
-                    ZoneId: cn-hangzhou-i
-                    VSwitchId: 
+                    VpcId: vpc-bp10gk7drwi4ecuexqgls
+                    ZoneId: cn-hangzhou-g
+                    VSwitchId: vsw-bp1newlcpcby20si43l3w
       FileArtifactRelation:
         '{{ computenest::file::aliyun-computenest_mysql-managed-vpcpeering-demo }}':
           ArtifactId: ${Artifact.Artifact_1.ArtifactId}
