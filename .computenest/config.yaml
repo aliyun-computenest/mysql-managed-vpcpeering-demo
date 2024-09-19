@@ -29,6 +29,9 @@ Service:
         '{{ computenest::file::aliyun-computenest_mysql-managed-vpcpeering-demo }}':
           ArtifactId: ${Artifact.Artifact_1.ArtifactId}
           ArtifactVersion: ${Artifact.Artifact_1.ArtifactVersion}
+    TemplateConfigs:
+      - Name: Template
+        ArchitectureDiagramUrl: 'docs/architecture.png'
   ServiceType: managed
   ServiceInfo:
     Locale: zh-CN
