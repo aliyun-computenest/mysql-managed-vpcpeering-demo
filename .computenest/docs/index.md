@@ -5,11 +5,11 @@
 本文介绍基于MySQL软件包快速构建托管版单租户计算巢服务，关于计算巢托管版可以参考[帮助文档](https://help.aliyun.com/zh/compute-nest/create-a-fully-managed-service?spm=a2c4g.11174283.0.i5)，
 本示例采用单ECS的架构，并默认开启了VPC对等连接，用户部署服务实例后，可以直接通过内网访问部署在服务商的MySQL，除此之外还配置了三种套餐，分别为：
 
-| 套餐名 |  ECS规格族         | vCPU与内存          | 系统盘               | 公网带宽      |
+| 套餐名 | ECS规格族         | vCPU与内存          | 系统盘               | 公网带宽      |
 |-----|----------------|------------------|-------------------|-----------|
-| 低配版 |  ecs.c6.large   | 内存型c6，2vCPU 4GiB | ESSD云盘 200GiB PL0 | 固定带宽1Mbps |
-| 基础版 |  ecs.c6.xlarge  | 内存型c6，4vCPU 8GiB | ESSD云盘 200GiB PL0 | 固定带宽1Mbps |
-| 高配版 |  ecs.c6.2xlarge | 内存型c6，4vCPU 8GiB | ESSD云盘 200GiB PL0 | 固定带宽1Mbps |
+| 低配版 | ecs.u1-c1m2.large   | 内存型c6，2vCPU 4GiB | ESSD云盘 200GiB PL0 | 固定带宽1Mbps |
+| 基础版 | ecs.u1-c1m2.xlarge  | 内存型c6，4vCPU 8GiB | ESSD云盘 200GiB PL0 | 固定带宽1Mbps |
+| 高配版 | ecs.u1-c1m2.2xlarge | 内存型c6，4vCPU 8GiB | ESSD云盘 200GiB PL0 | 固定带宽1Mbps |
 
 本示例对应的Git仓库地址：[mysql-managed-vpcpeering-demo](https://github.com/aliyun-computenest/mysql-managed-vpcpeering-demo)
 
@@ -23,25 +23,11 @@
 ## 部署架构
 
 本部署仅有一台ECS，安全组开放3306端口，每个服务实例将新建Vpc与Vswitch。
-![架构图.png](架构图.jpg)
+![架构图.png](architecture.png)
 
 ## 服务构建计费说明
 
 测试本服务构建无需任何费用，创建服务实例涉及的费用参考服务实例计费说明。
-
-## RAM账号所需权限
-
-本服务需要对ECS、VPC等资源进行访问和创建操作，若您使用RAM用户创建服务实例，需要在创建服务实例前，对使用的RAM用户的账号添加相应资源的权限。添加RAM权限的详细操作，请参见[为RAM用户授权](https://help.aliyun.com/document_detail/121945.html)
-。所需权限如下表所示。
-
-| 权限策略名称                              | 备注                          |
-|-------------------------------------|-----------------------------|
-| AliyunECSFullAccess                 | 管理云服务器服务（ECS）的权限            |
-| AliyunVPCFullAccess                 | 管理专有网络（VPC）的权限              |
-| AliyunROSFullAccess                 | 管理资源编排服务（ROS）的权限            |
-| AliyunComputeNestUserFullAccess     | 管理计算巢服务（ComputeNest）的用户侧权限  |
-| AliyunComputeNestSupplierFullAccess | 管理计算巢服务（ComputeNest）的服务商侧权限 |
-| AliyunCDTFullAccess                 | 管理云数据传输（CDT）的权限      |
 
 ## 服务实例计费说明
 
@@ -51,18 +37,13 @@
 - 系统盘类型及容量
 - 公网带宽
 
-计费方式包括：
-
-- 按量付费（小时）
-- 包年包月
-
 目前提供如下套餐：
 
 | 套餐名 | ECS规格族         | vCPU与内存          | 系统盘               | 公网带宽      |
 |-----|----------------|------------------|-------------------|-----------|
-| 低配版 | ecs.c6.large   | 内存型c6，2vCPU 4GiB | ESSD云盘 200GiB PL0 | 固定带宽1Mbps |
-| 基础版 | ecs.c6.xlarge  | 内存型c6，4vCPU 8GiB | ESSD云盘 200GiB PL0 | 固定带宽1Mbps |
-| 高配版 | ecs.c6.2xlarge | 内存型c6，4vCPU 8GiB | ESSD云盘 200GiB PL0 | 固定带宽1Mbps |
+| 低配版 | ecs.u1-c1m2.large   | 内存型c6，2vCPU 4GiB | ESSD云盘 200GiB PL0 | 固定带宽1Mbps |
+| 基础版 | ecs.u1-c1m2.xlarge  | 内存型c6，4vCPU 8GiB | ESSD云盘 200GiB PL0 | 固定带宽1Mbps |
+| 高配版 | ecs.u1-c1m2.2xlarge | 内存型c6，4vCPU 8GiB | ESSD云盘 200GiB PL0 | 固定带宽1Mbps |
 
 预估费用在创建实例时可实时看到。
 
@@ -137,180 +118,8 @@ yum install mysql-community-server -y
 templates/template.yaml主要由三部分组成
 
 1. Parameters定义需要用户填写的参数，包括付费类型，实例规格，Ipv4网段，交换机子网网段和实例密码可用区参数
-
-```
-ZoneId:
- Type: String
- AssociationProperty: ALIYUN::ECS::Instance:ZoneId
- Label:
-   en: VSwitch Available Zone
-   zh-cn: 可用区
-# 数据库root账户密码
-Password:
- # 查询该参数时只输出星号（*）
- NoEcho: true
- Type: String
- Description:
-   en: 'Database root account passwor, 8-32 characters, including uppercase and lowercase letters, numbers and special symbols (including: !@#$%^&*-+=_).'
-   zh-cn: 数据库root账户密码，长度8-32个字符，可包含大小字母、数字及特殊符号（包含：!@#$%^&*-+=_）。
- Label:
-   en: Root Account Password
-   zh-cn: 数据库root账户密码
- ConstraintDescription:
-   en: '8-32 characters, including uppercase and lowercase letters, numbers and special symbols (including: !@#$%^&*-+=_).'
-   zh-cn: 8-32个字符，可包含大小字母、数字及特殊符号（包含：!@#$%^&*-+=_）。
- MinLength: '8'
- MaxLength: '32'
- AssociationProperty: ALIYUN::ECS::Instance::Password
-# 新建Ipv4网段
-VpcCidrBlock:
-  Type: String
-  Label:
-    en: VPC CIDR IPv4 Block
-    zh-cn: 专有网络IPv4网段
-  Description:
-    zh-cn: VPC的ip地址段范围，<br>您可以使用以下的ip地址段或其子网:<br><font color='green'>[10.0.0.0/8]</font><br><font
-      color='green'>[172.16.0.0/12]</font><br><font color='green'>[192.168.0.0/16]</font>
-    en: 'The ip address range of the VPC in the CidrBlock form; <br>You can use
-        the following ip address ranges and their subnets: <br><font color=''green''>[10.0.0.0/8]</font><br><font
-        color=''green''>[172.16.0.0/12]</font><br><font color=''green''>[192.168.0.0/16]</font>'
-  AssociationProperty: ALIYUN::VPC::VPC::CidrBlock
-  Default: 192.168.0.0/16
-# 新建交换机网段
-VSwitchCidrBlock:
-  Type: String
-  Label:
-    en: VSwitch CIDR Block
-    zh-cn: 交换机子网网段
-  Description:
-    zh-cn: 必须属于VPC的子网段。
-    en: Must belong to the subnet segment of VPC.
-  AssociationProperty: ALIYUN::VPC::VSwitch::CidrBlock
-  AssociationPropertyMetadata:
-    VpcCidrBlock: VpcCidrBlock
-  Default: 192.168.1.0/24
-# Ecs实例类型
-EcsInstanceType:
- Type: String
- Label:
-   en: Instance Type
-   zh-cn: Ecs实例类型
- AssociationProperty: ALIYUN::ECS::Instance::InstanceType
- AllowedValues:
-   - ecs.c6.large
-   - ecs.c6.xlarge
-   - ecs.c6.2xlarge
-   - ecs.c6.4xlarge
-```
-
 2. Resources定义需要开的资源，包括新建的Vpc、VSwitch、ECS。
-
-```
-# Vpc
-EcsVpc:
-  Type: ALIYUN::ECS::VPC
-  Properties:
-    CidrBlock:
-      Ref: VpcCidrBlock
-    VpcName:
-      Ref: ALIYUN::StackName
-# 交换机
-EcsVSwitch:
-  Type: ALIYUN::ECS::VSwitch
-  Properties:
-    ZoneId:
-      Ref: ZoneId
-    VpcId:
-      Ref: EcsVpc
-    CidrBlock:
-      Ref: VSwitchCidrBlock
-EcsSecurityGroup:
- Type: 'ALIYUN::ECS::SecurityGroup'
- Properties:
-   VpcId:
-     Ref: VpcId
-   SecurityGroupIngress:
-     - Priority: 1
-       PortRange: 3306/3306
-       NicType: internet
-       SourceCidrIp: 0.0.0.0/0
-       IpProtocol: tcp
-# Ecs实例
-EcsInstanceGroup:
- Type: ALIYUN::ECS::InstanceGroup
- Properties:
-   # I/O优化实例
-   IoOptimized: optimized
-   ZoneId:
-     Ref: ZoneId
-   DiskMappings:
-     - Category: cloud_essd
-       Device: /dev/xvdb
-       Size: 200
-   SystemDiskSize: 40
-   # cloud-init执行用户命令
-   # /var/log/cloud-init.log /var/log/cloud-init-output.log 可以看到执行日志
-   # /var/lib/cloud/instance/scripts/part-001 为具体的脚本 可以sh 执行来排查问题
-   UserData:
-     Fn::Sub:
-       - |
-         #!/bin/sh
-
-         # sleep一段时间确保网络就绪
-         sleep 10
-
-         # 以下省略，具体可以看templates/template.yaml
-   # 付费方式：按量付费
-   InstanceChargeType: PostPaid
-   MaxAmount: 1
-   # 系统盘类型：cloud_essd
-   SystemDiskCategory: cloud_essd
-   # 实例名称
-   InstanceName:
-     Ref: ALIYUN::StackName
-   VpcId:
-     Ref: VpcId
-   SecurityGroupId:
-     Ref: EcsSecurityGroup
-   VSwitchId:
-     Ref: VSwitchId
-   # 指定CentOS 7.9镜像，如果修改镜像，UserData脚本需要进行适配
-   ImageId: "centos_7_9_x64_20G_alibase_20220727.vhd"
-   InstanceType:
-     Ref: EcsInstanceType
-   # 主机名
-   HostName:
-     Ref: ALIYUN::StackName
-   # Ecs登录密码
-   Password:
-     Ref: Password
-   # 是否为实例分配公网IP
-   AllocatePublicIP: true
-   InternetMaxBandwidthOut: 1
-```
-
 3. Outputs定义需要最终在计算巢概览页中对用户展示的输出
-
-```
-Outputs:
-  MysqlUserName:
-    Label: MySQL登录用户名
-    Value: admin
-  VisitUrl:
-    Label: 私网访问地址
-    Description:
-      zh-cn: 私网访问地址
-      en: private Addresses
-    Value:
-      Fn::Sub:
-        - mysql://${ServerAddress}:3306
-        - ServerAddress:
-            Fn::Select:
-              - 0
-              - Fn::GetAtt:
-                  - EcsInstanceGroup
-                  - PrivateIps
-```
 
 ## 服务配置
 

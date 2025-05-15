@@ -39,6 +39,9 @@ Service:
         '{{ computenest::file::MySQL }}':
           ArtifactId: ${Artifact.Artifact_1.ArtifactId}
           ArtifactVersion: ${Artifact.Artifact_1.ArtifactVersion}
+    TemplateConfigs:
+      - Name: Template
+        ArchitectureDiagramUrl: 'docs/architecture.png'
     NetworkMetadata:
       EnablePrivateVpcConnection: true
       EnableReversePrivateVpcConnection: false
