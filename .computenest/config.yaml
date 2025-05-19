@@ -9,7 +9,7 @@ Service:
       UserType: Aliyun
       RoleName: ${RoleName}
       SupplierTemplateConfigs:
-        - Name: 单机版
+        - Name: Template
           Url: 'ros_templates/template.yaml'
           PredefinedParameters:
             - Name: 低配版
