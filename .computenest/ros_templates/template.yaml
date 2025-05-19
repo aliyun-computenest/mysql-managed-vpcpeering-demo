@@ -65,21 +65,13 @@ Parameters:
           - ecs.u1
 # 定义资源
 Resources:
-  # 定义WaitCondition和WaitConditionHandle来等待命令在Ecs中执行完毕部署成功
-  WaitCondition:
-    Type: ALIYUN::ROS::WaitCondition
-    Properties:
-      Count: 1
-      Handle:
-        Ref: WaitConditionHandle
-      Timeout: 1800
-  WaitConditionHandle:
-    Type: ALIYUN::ROS::WaitConditionHandle
+  # 安全组
   EcsSecurityGroup:
     Type: 'ALIYUN::ECS::SecurityGroup'
     Properties:
       VpcId:
         Ref: EcsVpc
+      # 放行入端口
       SecurityGroupIngress:
         - Priority: 1
           PortRange: 3306/3306
@@ -117,10 +109,44 @@ Resources:
           Device: /dev/xvdb
           Size: 200
       SystemDiskSize: 40
-      # cloud-init执行用户命令
-      # /var/log/cloud-init.log /var/log/cloud-init-output.log 可以看到执行日志
-      # /var/lib/cloud/instance/scripts/part-001 为具体的脚本 可以sh 执行来排查问题
-      UserData:
+      # 付费方式：按量付费
+      InstanceChargeType: PostPaid
+      MaxAmount: 1
+      # 系统盘类型：cloud_essd
+      SystemDiskCategory: cloud_essd
+      # 实例名称
+      InstanceName:
+        Ref: ALIYUN::StackName
+      VpcId:
+        Ref: EcsVpc
+      SecurityGroupId:
+        Ref: EcsSecurityGroup
+      VSwitchId:
+        Ref: EcsVSwitch
+      # 指定CentOS 7.9镜像，如果修改镜像，UserData脚本需要进行适配
+      ImageId: "centos_7_9_x64_20G_alibase_20220727.vhd"
+      InstanceType:
+        Ref: EcsInstanceType
+      # 主机名
+      HostName:
+        Ref: ALIYUN::StackName
+      # Ecs登录密码
+      Password:
+        Ref: Password
+      # 是否为实例分配公网IP
+      AllocatePublicIP: true
+      InternetMaxBandwidthOut: 1
+  # cloud-init执行用户命令
+  # /var/log/cloud-init.log /var/log/cloud-init-output.log 可以看到执行日志
+  # /var/lib/cloud/instance/scripts/part-001 为具体的脚本 可以sh 执行来排查问题
+  InstanceRunCommand:
+    Type: ALIYUN::ECS::RunCommand
+    Properties:
+      InstanceIds:
+        Fn::GetAtt:
+          - EcsInstanceGroup
+          - InstanceIds
+      CommandContent:
         Fn::Sub:
           - |
             #!/bin/sh
@@ -181,45 +207,12 @@ Resources:
             echo 'socket=/data1/mysql/mysql.sock' >> /etc/my.cnf
             # 重启MySQL
             systemctl start mysqld
-
-            # 执行成功回调WaitCondition结束WaitCondition的等待
-            ${CurlCli} -d "{\"Data\" : \"SUCCESS\", \"Status\" : \"SUCCESS\"}"
-
-          # 获取到WaitConditionHandle的地址放到 ${CurlCli}变量里
-          - CurlCli:
-              Fn::GetAtt:
-                - WaitConditionHandle
-                - CurlCli
-            # 数据库root账户密码
-            Password:
+          # 数据库root账户密码
+          - Password:
               Ref: Password
-      # 付费方式：按量付费
-      InstanceChargeType: PostPaid
-      MaxAmount: 1
-      # 系统盘类型：cloud_essd
-      SystemDiskCategory: cloud_essd
-      # 实例名称
-      InstanceName:
-        Ref: ALIYUN::StackName
-      VpcId:
-        Ref: EcsVpc
-      SecurityGroupId:
-        Ref: EcsSecurityGroup
-      VSwitchId:
-        Ref: EcsVSwitch
-      # 指定CentOS 7.9镜像，如果修改镜像，UserData脚本需要进行适配
-      ImageId: "centos_7_9_x64_20G_alibase_20220727.vhd"
-      InstanceType:
-        Ref: EcsInstanceType
-      # 主机名
-      HostName:
-        Ref: ALIYUN::StackName
-      # Ecs登录密码
-      Password:
-        Ref: Password
-      # 是否为实例分配公网IP
-      AllocatePublicIP: true
-      InternetMaxBandwidthOut: 1
+      Type: RunShellScript
+      Timeout: 300
+      Sync: true
 # 定义输出
 Outputs:
   MysqlUserName:

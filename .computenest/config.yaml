@@ -54,6 +54,13 @@ Service:
     Name: MySQL托管版beta1
   ShareType: Public
   ApprovalType: Manual
+  OperationMetadata:
+    ModifyParametersConfig:
+      - TemplateName: Template
+        Operation:
+          - Name: 网络变配
+            Description: 网络变配支持VpcPeering新增、删除、修改
+            Type: Custom
 Artifact:
   Artifact_1:
     ArtifactType: File
