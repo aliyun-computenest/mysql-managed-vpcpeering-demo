@@ -79,17 +79,21 @@
    ![image.png](部署完成.jpg)
    网络配置已有对等连接内容（用户在创建服务实例页选择开启VPC对等连接才会显示）。
    ![image.png](部署完成网络配置.jpg)
-5. 使用服务，本服务支持VPC对等连接，租户可以通过VPC对等连接实现私网访问，租户私网访问流程：
-    1. 在服务实例详情 - 立即使用，可以看到私网IP地址，连接时可以通过IP地址进行访问
+## 使用服务
+本服务支持VPC对等连接，租户可以通过VPC对等连接实现私网访问，租户私网访问流程：
+1. 在服务实例详情 - 立即使用，可以看到私网IP地址，连接时可以通过IP地址进行访问
        ![私网Ip地址.png](私网Ip地址.jpg)
-    2. 在对应的vsw中创建ECS，创建好后安装mysql客户端
+2. 在对应的vsw中创建ECS，创建好后安装mysql客户端
    ```
    yum install mysql
    or
    apt install mysql-client
    ```
-    3. 在该ECS中连接MySQL，用IP进行连接：
-        ![连接MySQL.jpg](连接MySQL.jpg)
+3. 在该ECS中连接MySQL，用IP进行连接：
+   ```
+      mysql -u admin -h ${实例输出IP地址} -P 3306 -p${密码}
+   ```
+    ![连接MySQL.jpg](连接MySQL.jpg)
 
 ## 服务详细说明
 
