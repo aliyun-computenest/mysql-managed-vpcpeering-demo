@@ -59,11 +59,10 @@ Parameters:
       en: Instance Type
       zh-cn: Ecs实例类型
     AssociationProperty: ALIYUN::ECS::Instance::InstanceType
-    AllowedValues:
-      - ecs.c6.large
-      - ecs.c6.xlarge
-      - ecs.c6.2xlarge
-      - ecs.c6.4xlarge
+    AssociationPropertyMetadata:
+      Constraints:
+        InstanceTypeFamily:
+          - ecs.u1
 # 定义资源
 Resources:
   # 定义WaitCondition和WaitConditionHandle来等待命令在Ecs中执行完毕部署成功
