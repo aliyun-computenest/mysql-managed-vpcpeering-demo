@@ -61,6 +61,7 @@ Service:
           - Name: 网络变配
             Description: 网络变配支持VpcPeering新增、删除、修改
             Type: Custom
+            EnablePrivateVpcConnection: true
 Artifact:
   Artifact_1:
     ArtifactType: File
