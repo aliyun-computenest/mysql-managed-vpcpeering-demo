@@ -173,6 +173,9 @@ Resources:
                 mount -a
             }
             init_and_mount_data_disk
+  # cloud-init执行用户命令
+  # /var/log/cloud-init.log /var/log/cloud-init-output.log 可以看到执行日志
+  # /var/lib/cloud/instance/scripts/part-001 为具体的脚本 可以sh 执行来排查问题
   InstanceRunCommand:
     Type: ALIYUN::ECS::RunCommand
     Properties:
@@ -195,23 +198,26 @@ Resources:
 
             function change_mysql_config() {
               # 将MySQL的配置和数据路径移动到数据盘上
-              rsync -av /var/lib/mysql /data
-              # 修改配置文件
-              sed -i 's/\/var\/lib/\/data/g' /etc/my.cnf
-              echo -e '\n' >> /etc/my.cnf
-              echo '[client]' >> /etc/my.cnf
-              echo 'port=3306' >> /etc/my.cnf
-              echo 'socket=/data/mysql/mysql.sock' >> /etc/my.cnf
+              if [ ! -d /data/mysql ]; then
+                rsync -av /var/lib/mysql /data
+                # 修改配置文件
+                sed -i 's/\/var\/lib/\/data/g' /etc/my.cnf
+                echo -e '\n' >> /etc/my.cnf
+                echo '[client]' >> /etc/my.cnf
+                echo 'port=3306' >> /etc/my.cnf
+                echo 'socket=/data/mysql/mysql.sock' >> /etc/my.cnf
+              fi
             }
 
             function create_admin_account() {
-              # 以超级用户身份登入，创建admin用户，并允许admin用户以Password为密码远程登录
-              mysqladmin -u root password '${Password}'
-              echo "create database test character set utf8 collate utf8_bin;" > ./test.sql
-              echo "CREATE USER 'admin'@'%' IDENTIFIED BY '${Password}';" >> ./test.sql
-              echo "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION;" >> ./test.sql
-              echo "FLUSH PRIVILEGES;" >> ./test.sql
-              mysql -u root -p'${Password}' < ./test.sql
+              if [ ! -f ./test.sql ]; then
+                # 以超级用户身份登入，创建admin用户，并允许admin用户以Password为密码远程登录
+                mysqladmin -u root password '${Password}'
+                echo "create database test character set utf8 collate utf8_bin;" > ./test.sql
+                echo "CREATE USER 'admin'@'%' IDENTIFIED BY '${Password}';" >> ./test.sql
+                echo "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION;" >> ./test.sql
+                mysql -u root -p'${Password}' < ./test.sql
+              fi
             }
 
             cd /data
