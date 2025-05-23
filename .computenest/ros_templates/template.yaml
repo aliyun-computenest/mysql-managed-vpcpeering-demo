@@ -216,6 +216,7 @@ Resources:
                 echo "create database test character set utf8 collate utf8_bin;" > ./test.sql
                 echo "CREATE USER 'admin'@'%' IDENTIFIED BY '${Password}';" >> ./test.sql
                 echo "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION;" >> ./test.sql
+                echo "FLUSH PRIVILEGES;" >> ./test.sql
                 mysql -u root -p'${Password}' < ./test.sql
               fi
             }
