@@ -23,7 +23,7 @@
 ## 部署架构
 
 本部署仅有一台ECS，安全组开放3306端口，每个服务实例将新建Vpc与Vswitch。
-![架构图.png](architecture.png)
+![architecture.jpg](architecture.jpg)
 
 ## 服务构建计费说明
 

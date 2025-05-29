@@ -41,7 +41,7 @@ Service:
           ArtifactVersion: ${Artifact.Artifact_1.ArtifactVersion}
     TemplateConfigs:
       - Name: Template
-        ArchitectureDiagramUrl: 'docs/architecture.png'
+        ArchitectureDiagramUrl: 'docs/architecture.jpg'
     NetworkMetadata:
       EnablePrivateVpcConnection: true
       EnableReversePrivateVpcConnection: false
