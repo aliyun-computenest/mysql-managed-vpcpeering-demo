@@ -37,8 +37,7 @@ Service:
             - EcsInstanceType
       FileArtifactRelation:
         '{{ computenest::file::MySQL }}':
-          ArtifactId: ${Artifact.Artifact_1.ArtifactId}
-          ArtifactVersion: ${Artifact.Artifact_1.ArtifactVersion}
+          ArtifactId: artifact-294b0a26e269458eb6b9
     TemplateConfigs:
       - Name: Template
         ArchitectureDiagramUrl: 'docs/architecture.jpg'
@@ -69,11 +68,3 @@ Service:
             Description: 网络变配支持VpcPeering新增、删除、修改
             Type: Custom
             EnablePrivateVpcConnection: true
-Artifact:
-  Artifact_1:
-    ArtifactType: File
-    ArtifactName: mysql-managed-vpcpeering-demo-artifact
-    Description: mysql-managed-vpcpeering-demo-artifact
-    ArtifactProperty:
-      RegionId: cn-hangzhou
-      Url: 'resources/artifact_resources/file/mysql-community-release-el6-5.noarch.rpm'
