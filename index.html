@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="计算巢是阿里云开放给企业应用服务商的服务管理平台。服务商能够在计算巢上发布私有化部署服务，为其客户提供云上软件一键部署的能力；同时也支持全托管模式的服务，赋能服务商托管其客户资源。">
+  <title>服务模板说明文档 - Aliyun 计算巢 x mysql-managed-vpcpeering-demo</title>
+
+  <link rel="shortcut icon" href="img/favicon.ico">
+
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css">
+  <link rel="stylesheet" href="css/theme.css">
+  
+
+  
+
+  
+  
+
+  
+    <script src="search/main.js"></script>
+  
+
+  
+
+  <script src="js/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="nav">
+      <div class="nav-inner">
+        <div class="logo">
+          <img src="./img/logo-2x.png">
+        </div>
+        <div class="nav-list">
+          <ul>
+          
+              <li><a href="#_1">服务模板说明文档</a></li>
+              
+                  <li><a href="#_2">服务说明</a></li>
+                  
+              
+                  <li><a href="#_3">部署架构</a></li>
+                  
+              
+                  <li><a href="#_4">服务构建计费说明</a></li>
+                  
+              
+                  <li><a href="#_5">服务实例计费说明</a></li>
+                  
+              
+                  <li><a href="#_6">部署流程</a></li>
+                  
+                      <li class="li-h3"><a href="#_7">部署参数说明</a></li>
+                  
+                      <li class="li-h3"><a href="#_8">部署步骤</a></li>
+                  
+              
+                  <li><a href="#_9">使用服务</a></li>
+                  
+                      <li class="li-h3"><a href="#_10">实例连接</a></li>
+                  
+                      <li class="li-h3"><a href="#_11">实例变配</a></li>
+                  
+              
+                  <li><a href="#_12">服务详细说明</a></li>
+                  
+              
+                  <li><a href="#_13">服务配置</a></li>
+                  
+              
+                  <li><a href="#_14">服务交付</a></li>
+                  
+              
+          
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="content theme-github">
+      
+      <div class="content-inner">        
+        
+        <h1 id="_1">服务模板说明文档</h1>
+<h2 id="_2">服务说明</h2>
+<p>本文介绍基于MySQL软件包快速构建托管版单租户计算巢服务，关于计算巢托管版可以参考<a href="https://help.aliyun.com/zh/compute-nest/create-a-fully-managed-service?spm=a2c4g.11174283.0.i5">帮助文档</a>，
+本示例采用单ECS的架构，并默认开启了VPC对等连接，用户部署服务实例后，可以直接通过内网访问部署在服务商的MySQL，除此之外还配置了三种套餐，分别为：</p>
+<table>
+<thead>
+<tr>
+<th>套餐名</th>
+<th>ECS规格族</th>
+<th>vCPU与内存</th>
+<th>系统盘</th>
+<th>公网带宽</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>低配版</td>
+<td>ecs.u1-c1m2.large</td>
+<td>内存型c6，2vCPU 4GiB</td>
+<td>ESSD云盘 200GiB PL0</td>
+<td>固定带宽1Mbps</td>
+</tr>
+<tr>
+<td>基础版</td>
+<td>ecs.u1-c1m2.xlarge</td>
+<td>内存型c6，4vCPU 8GiB</td>
+<td>ESSD云盘 200GiB PL0</td>
+<td>固定带宽1Mbps</td>
+</tr>
+<tr>
+<td>高配版</td>
+<td>ecs.u1-c1m2.2xlarge</td>
+<td>内存型c6，4vCPU 8GiB</td>
+<td>ESSD云盘 200GiB PL0</td>
+<td>固定带宽1Mbps</td>
+</tr>
+</tbody>
+</table>
+<p>本示例对应的Git仓库地址：<a href="https://github.com/aliyun-computenest/mysql-managed-vpcpeering-demo">mysql-managed-vpcpeering-demo</a></p>
+<p>本示例会自动的构建计算巢服务，具体的服务构建流程为:</p>
+<ol>
+<li>将MySQL安装包（提前存放到该github repo中）构建为计算巢文件部署物</li>
+<li>创建计算巢服务并关联文件部署物</li>
+</ol>
+<p>创建过程大约持续3分钟，当服务变成待提交后构建成功。</p>
+<h2 id="_3">部署架构</h2>
+<p>本部署仅有一台ECS，安全组开放3306端口，每个服务实例将新建Vpc与Vswitch。
+<img alt="architecture.jpg" src="architecture.jpg" /></p>
+<h2 id="_4">服务构建计费说明</h2>
+<p>测试本服务构建无需任何费用，创建服务实例涉及的费用参考服务实例计费说明。</p>
+<h2 id="_5">服务实例计费说明</h2>
+<p>测试本服务在计算巢上的费用主要涉及：</p>
+<ul>
+<li>所选vCPU与内存规格</li>
+<li>系统盘类型及容量</li>
+<li>公网带宽</li>
+</ul>
+<p>目前提供如下套餐：</p>
+<table>
+<thead>
+<tr>
+<th>套餐名</th>
+<th>ECS规格族</th>
+<th>vCPU与内存</th>
+<th>系统盘</th>
+<th>公网带宽</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>低配版</td>
+<td>ecs.u1-c1m2.large</td>
+<td>内存型c6，2vCPU 4GiB</td>
+<td>ESSD云盘 200GiB PL0</td>
+<td>固定带宽1Mbps</td>
+</tr>
+<tr>
+<td>基础版</td>
+<td>ecs.u1-c1m2.xlarge</td>
+<td>内存型c6，4vCPU 8GiB</td>
+<td>ESSD云盘 200GiB PL0</td>
+<td>固定带宽1Mbps</td>
+</tr>
+<tr>
+<td>高配版</td>
+<td>ecs.u1-c1m2.2xlarge</td>
+<td>内存型c6，4vCPU 8GiB</td>
+<td>ESSD云盘 200GiB PL0</td>
+<td>固定带宽1Mbps</td>
+</tr>
+</tbody>
+</table>
+<p>预估费用在创建实例时可实时看到。</p>
+<h2 id="_6">部署流程</h2>
+<h3 id="_7">部署参数说明</h3>
+<table>
+<thead>
+<tr>
+<th>参数族</th>
+<th>参数项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基础配置</td>
+<td>数据库root和admin账户密码</td>
+<td>数据库root和admin账户密码，长度8-32个字符，可包含大小字母、数字及特殊符号（包含：!@#$%^&amp;*-+=_）。</td>
+</tr>
+<tr>
+<td>网络配置</td>
+<td>可用区</td>
+<td>选择可用区，资源将在服务商的该可用区创建。</td>
+</tr>
+<tr>
+<td>网络设置</td>
+<td>专有网络IPv4网段</td>
+<td>填写专有网络IPv4网段，建议您使用RFC私网地址作为专有网络的网段如10.0.0.0/8，172.16.0.0/12，192.168.0.0/16。</td>
+</tr>
+<tr>
+<td>网络设置</td>
+<td>交换机子网网段</td>
+<td>填写交换机子网网段。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">部署步骤</h3>
+<ol>
+<li>部署链接
+   <img alt="image.png" src="%E9%83%A8%E7%BD%B2%E9%93%BE%E6%8E%A5.jpg" /></li>
+<li>单击部署链接，进入服务实例部署界面，根据界面提示，填写参数完成部署。
+   <img alt="image.png" src="%E9%83%A8%E7%BD%B2%E5%8F%82%E6%95%B0.jpg" />
+   网络配置部分填入新建VPC的IPV4网段与交换机子网网段。</li>
+</ol>
+<p>如果需要创建对等连接，这里还需要填写网络设置，网络设置部分填写对等连接的用户侧VPC。
+   需要注意用户侧VPC的网段不可以与新建VPC网段重叠。
+   <img alt="网络配置.png" src="%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE.jpg" />
+2. 参数填写完成后可进入订单确认页。
+   <img alt="image.png" src="%E8%AE%A2%E5%8D%95%E7%A1%AE%E8%AE%A4.jpg" />
+3. 确认订单完成后同意服务协议并点击<strong>立即创建</strong>
+   进入部署阶段。
+   <img alt="image.png" src="%E6%8F%90%E4%BA%A4%E6%88%90%E5%8A%9F.png" /></p>
+<p><img alt="image.png" src="%E9%83%A8%E7%BD%B2%E4%B8%AD.jpg" />
+4. 等待部署完成后就可以开始使用服务。
+   <img alt="image.png" src="%E9%83%A8%E7%BD%B2%E5%AE%8C%E6%88%90.jpg" />
+   网络配置已有对等连接内容（用户在创建服务实例页选择开启VPC对等连接才会显示，若创建时未开启可通过网络变配后续开启）。
+   <img alt="image.png" src="%E9%83%A8%E7%BD%B2%E5%AE%8C%E6%88%90%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE.jpg" /></p>
+<h2 id="_9">使用服务</h2>
+<h3 id="_10">实例连接</h3>
+<p>本服务支持VPC对等连接，租户可以通过VPC对等连接实现私网访问，租户私网访问流程：
+1. 在服务实例详情 - 立即使用，可以看到私网IP地址，连接时可以通过IP地址进行访问
+       <img alt="私网Ip地址.png" src="%E7%A7%81%E7%BD%91Ip%E5%9C%B0%E5%9D%80.jpg" />
+2. 在对应的vsw中创建ECS，创建好后安装mysql客户端
+   <code>yum install mysql
+   or
+   apt install mysql-client</code>
+3. 在该ECS中连接MySQL，用IP进行连接：
+   <code>mysql -u admin -h ${实例输出IP地址} -P 3306 -p${密码}</code>
+    <img alt="连接MySQL.jpg" src="%E8%BF%9E%E6%8E%A5MySQL.jpg" /></p>
+<h3 id="_11">实例变配</h3>
+<p>本服务支持VpcPeering的新增、修改、删除等操作，具体为：
+1. 在服务实例详情点击修改配置
+<img alt="img.png" src="%E7%BD%91%E7%BB%9C%E5%8F%98%E6%9B%B4.png" />
+2. 选择网络变更，点击下一步，依据需求修改、新增、删除对等链接，之后点击下一步修改参数预览：
+<img alt="img.png" src="%E4%BF%AE%E6%94%B9%E5%8F%82%E6%95%B0%E5%8F%98%E9%85%8D.png" />
+<img alt="img.png" src="%E5%8F%98%E9%85%8D%E5%8F%82%E6%95%B0%E9%A2%84%E8%A7%88.png" />
+3. 确认无误后点击确定，进入变配中状态：
+<img alt="img.png" src="%E5%8F%98%E9%85%8D%E4%B8%AD.png" />
+4. 等待变配完成，当状态变为已部署代表变配完成。可继续后续功能。</p>
+<h2 id="_12">服务详细说明</h2>
+<p>本文提前将MySQL社区版安装包存放到该Github Repo中，构建服务过程中会将该安装包发布为计算巢部署物，并在ROS模板写入安装指令，ROS模板引擎在执行时便会自动执行安装了。</p>
+<pre><code class="language-bash">wget '{{ computenest::file::MySQL }}' -O mysql-community-release-el6-5.noarch.rpm
+rpm -ivh mysql-community-release-el6-5.noarch.rpm
+yum repolist all | grep mysql
+yum install mysql-community-server -y
+</code></pre>
+<p>{{ computenest::file::MySQL }} 为占位符，会由计算巢服务替换成文件部署物MySQL的http下载地址</p>
+<p>文件说明</p>
+<table>
+<thead>
+<tr>
+<th>文件路径</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>config.yaml</td>
+<td>构建服务的配置文件，服务构建过程中会使用计算巢命令行工具<a href="https://pypi.org/project/computenest-cli/">computenest-cli</a>，computenest-cli会基于该配置文件构建服务</td>
+</tr>
+<tr>
+<td>parameters.yaml</td>
+<td>本服务为托管版单租，使用该文件渲染服务商需要配置的网络参数，包括VpcId，VSwitch等</td>
+</tr>
+<tr>
+<td>artifact/mysql-community-release-el6-5.noarch.rpm</td>
+<td>MySQL社区版安装包，构建过程会将该包发布为计算巢部署物</td>
+</tr>
+<tr>
+<td>icons/service_logo.jpg</td>
+<td>构建服务默认的图标</td>
+</tr>
+<tr>
+<td>templates/parameters.yaml</td>
+<td>本服务为托管版单租服务，所以只需要用户填写一部分参数，通过该文件指定用户所填参数</td>
+</tr>
+<tr>
+<td>templates/template.yaml</td>
+<td>ROS模板文件，ROS模板引擎根据该模板能够自动创建出所有的资源</td>
+</tr>
+</tbody>
+</table>
+<p>templates/template.yaml主要由三部分组成</p>
+<ol>
+<li>Parameters定义需要用户填写的参数，包括付费类型，实例规格，Ipv4网段，交换机子网网段和实例密码可用区参数</li>
+<li>Resources定义需要开的资源，包括新建的Vpc、VSwitch、ECS。</li>
+<li>Outputs定义需要最终在计算巢概览页中对用户展示的输出</li>
+</ol>
+<h2 id="_13">服务配置</h2>
+<p><a href="https://help.aliyun.com/zh/compute-nest/create-a-hosted-operations-and-maintenance-service?spm=a2c4g.11186623.0.i24#task-2167552]">创建代运维服务完成实例运维</a></p>
+<p><a href="https://help.aliyun.com/zh/compute-nest/use-cases/create-a-service-that-supports-specification-changes-and-change-the-specifications-of-a-service-instance?spm=a2c4g.11186623.0.i3]">创建包含变配功能的服务</a></p>
+<p><a href="https://help.aliyun.com/zh/compute-nest/upgrade-a-service-instance?spm=a2c4g.11186623.0.i17#task-2236803">创建包含服务升级功能的服务</a></p>
+<h2 id="_14">服务交付</h2>
+<p><a href="https://help.aliyun.com/zh/compute-nest/customize-a-service-architecture?spm=a2c4g.11186623.0.0.56e736bfyUdlFm]">自定义服务架构图</a></p>
+<p><a href="https://help.aliyun.com/zh/compute-nest/use-cases/publish-documents-to-compute-nest?spm=a2c4g.313309.0.i0]">服务文档上线流程</a></p>
+<p><a href="https://help.aliyun.com/zh/compute-nest/publish-a-service-to-alibaba-cloud-marketplace?spm=a2c4g.11186623.0.i7]">将服务上架云市场并上到云市场售卖</a></p>
+        
+      </div>
+
+      <div class="copyrights">© 2009-2022 Aliyun.com 版权所有</div>
+    </div>
+  </div>
+  
+  <!--
+  MkDocs version      : 1.6.1
+  Docs Build Date UTC : 2025-06-10 02:13:40.446590+00:00
+  -->
+</body>
+</html>
