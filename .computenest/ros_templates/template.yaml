@@ -99,6 +99,9 @@ Resources:
   # Ecs实例
   EcsInstanceGroup:
     Type: ALIYUN::ECS::InstanceGroup
+    UpdatePolicy:
+      RollingUpdateForOrigInstances:
+        MaxBatchSize: 1
     Properties:
       # I/O优化实例
       IoOptimized: optimized
